@@ -975,50 +975,59 @@ function previewUpdatesFromGitHub() {
       githubVersion = { version: 'unknown', changes: ['Could not fetch version info'] };
     }
 
-    if (hasUpdates) {
-      // Real data comparison for updates
+    // Always check data comparison, even if versions match
+    try {
+      const currentConfig = loadConfig(ss);
+      const currentSlides = loadSlides(ss);
+
+      // Fetch actual data from GitHub for comparison with retry logic
+      const configContent = fetchWithRetry(CONFIG_URL);
+      const slidesContent = fetchWithRetry(SLIDES_URL);
+
+      // Parse CSV with better error handling
+      let githubConfigData, githubSlidesData;
       try {
-        const currentConfig = loadConfig(ss);
-        const currentSlides = loadSlides(ss);
-
-        // Fetch actual data from GitHub for comparison with retry logic
-        const configContent = fetchWithRetry(CONFIG_URL);
-        const slidesContent = fetchWithRetry(SLIDES_URL);
-
-        // Parse CSV with better error handling
-        let githubConfigData, githubSlidesData;
-        try {
-          githubConfigData = Utilities.parseCsv(configContent);
-        } catch (e) {
-          throw new Error(`Config parse failed: ${e.message}. First 100 chars: ${configContent.substring(0, 100)}`);
-        }
-        try {
-          githubSlidesData = parsePipeDelimitedCsv(slidesContent);
-        } catch (e) {
-          throw new Error(`Slides parse failed: ${e.message}. First 100 chars: ${slidesContent.substring(0, 100)}`);
-        }
-
-        report += `📊 DATA COMPARISON:\n`;
-        report += `   Config:  ${Object.keys(currentConfig).length} settings (local) vs ${githubConfigData.length - 1} (GitHub)\n`;
-        report += `   Slides:  ${currentSlides.length} slides (local) vs ${githubSlidesData.length - 1} (GitHub)\n`;
-
-        if (githubConfigData.length - 1 !== Object.keys(currentConfig).length ||
-            githubSlidesData.length - 1 !== currentSlides.length) {
-          report += `   Status:  🔄 Data differences detected\n\n`;
-        } else {
-          report += `   Status:  ✅ Data appears current\n\n`;
-        }
-
-        report += `🎯 RECOMMENDED ACTION:\n`;
-        report += `   1. Use "Apply Updates" to get v${githubVersion.version}\n`;
-        report += `   2. Your data will be backed up automatically\n`;
-        report += `   3. New features will be available immediately\n\n`;
-      } catch (dataError) {
-        report += `📊 DATA COMPARISON: ⚠️ Could not compare data\n\n`;
+        githubConfigData = Utilities.parseCsv(configContent);
+      } catch (e) {
+        throw new Error(`Config parse failed: ${e.message}. First 100 chars: ${configContent.substring(0, 100)}`);
       }
-    } else {
-      report += `✅ NO UPDATES NEEDED\n`;
-      report += `   You're running the latest version!\n\n`;
+      try {
+        githubSlidesData = parsePipeDelimitedCsv(slidesContent);
+      } catch (e) {
+        throw new Error(`Slides parse failed: ${e.message}. First 100 chars: ${slidesContent.substring(0, 100)}`);
+      }
+
+      report += `📊 DATA COMPARISON:\n`;
+      report += `   Config:  ${Object.keys(currentConfig).length} settings (local) vs ${githubConfigData.length - 1} (GitHub)\n`;
+      report += `   Slides:  ${currentSlides.length} slides (local) vs ${githubSlidesData.length - 1} (GitHub)\n`;
+
+      const configDiffers = githubConfigData.length - 1 !== Object.keys(currentConfig).length;
+      const slidesDiffer = githubSlidesData.length - 1 !== currentSlides.length;
+
+      if (configDiffers || slidesDiffer) {
+        report += `   Status:  🔄 Data differences detected\n\n`;
+      } else {
+        report += `   Status:  ✅ Data appears current\n\n`;
+      }
+
+      if (hasUpdates || configDiffers || slidesDiffer) {
+        report += `🎯 RECOMMENDED ACTION:\n`;
+        if (hasUpdates) {
+          report += `   1. Use "Apply Updates" to get v${githubVersion.version}\n`;
+        } else {
+          report += `   1. Use "Apply Updates" to sync data from GitHub\n`;
+        }
+        report += `   2. Your data will be backed up automatically\n`;
+        report += `   3. Changes will be applied immediately\n\n`;
+      } else {
+        report += `✅ NO UPDATES NEEDED\n`;
+        report += `   You're running the latest version with current data!\n\n`;
+      }
+    } catch (dataError) {
+      report += `📊 DATA COMPARISON: ⚠️ Could not compare data (${dataError.message})\n\n`;
+      if (hasUpdates) {
+        report += `🎯 Version update available - use "Apply Updates"\n\n`;
+      }
     }
 
     report += `🟢 LIVE MODE ACTIVE\n`;
