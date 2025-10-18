@@ -1077,7 +1077,7 @@ function applyUpdatesFromGitHub() {
       // Parse data with better error handling
       let configData, slidesData, versionData;
       try {
-        configData = Utilities.parseCsv(configContent);
+        configData = parsePipeDelimitedCsv(configContent);
       } catch (e) {
         throw new Error(`Config parse failed: ${e.message}. Content type: ${typeof configContent}, First 200 chars: ${configContent.substring(0, 200)}`);
       }
