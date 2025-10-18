@@ -1,41 +1,14 @@
 /**
- * Maersk AI Brand Reputation Presentation Generator
- * Version: 1.3.0
- * Last Updated: 2025-10-05
+ * AI SEO Agency Presentation Generator
+ * Version: 1.0.0
+ * Last Updated: 2025-10-18
  *
  * CHANGELOG:
- * 1.3.0 (2025-10-05)
- * - Added company name prefix to presentation title (from config['company'])
- * - Added timestamp to presentation title for version tracking
- * - Format: "[Company] Title - YYYY-MM-DD HH:mm"
- *
- * 1.2.3 (2025-10-05)
- * - Added custom pipe-delimited CSV parser
- * - Fixed slides.csv parsing to preserve all fields correctly
- * - Replaced unreliable Utilities.parseCsv with simple split function
- *
- * 1.2.2 (2025-10-05)
- * - Fixed line ending normalization for CSV parsing
- * - Added UTF-8 encoding support for GitHub content
- *
- * 1.2.1 (2025-10-05)
- * - Added detailed error debugging for auto-update feature
- * - Improved CSV parsing error messages
- *
- * 1.2.0 (2025-10-04)
- * - Updated for Maersk AI Brand Reputation presentation
- * - Fixed image insertion for all slides with chart_ref or media_ref
- * - Maintains aspect ratio for images and charts
- * - Improved image positioning and sizing
- * - Charts and images now work in any layout type
- *
- * 1.1.0 (2025-10-03)
- * - Added real image insertion from Google Drive
- * - Removed redundant menu functions
- * - Enhanced error handling with retry logic
- *
- * 1.0.0 (2025-10-03)
- * - Initial release with auto-update functionality
+ * 1.0.0 (2025-10-18)
+ * - Initial presentation structure for "The Future of Agency: AI SEO"
+ * - 70 slides covering AI search transformation for agencies
+ * - Complete speaker notes and delivery cues
+ * - Foundation-first approach to AI SEO
  * - GitHub integration for data synchronization
  * - Comprehensive slide generation system
  */
@@ -45,8 +18,8 @@
 // ============================================================================
 
 // Script version constant
-const SCRIPT_VERSION = '1.3.0';
-const SCRIPT_RELEASE_DATE = '2025-10-05';
+const SCRIPT_VERSION = '1.0.0';
+const SCRIPT_RELEASE_DATE = '2025-10-18';
 
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
@@ -901,9 +874,9 @@ function validateSlideData() {
 // Version management configuration
 const GITHUB_CONFIG = {
   username: 'willscott-v2',
-  repo: 'Maersk-AI-Brand-Reputation',
+  repo: 'AI-SEO-Agency',
   branch: 'main',  // or 'v1.0', 'stable', etc.
-  currentVersion: '1.3.0'  // Stored locally, compared with GitHub
+  currentVersion: '1.0.0'  // Stored locally, compared with GitHub
 };
 
 // Custom CSV parser for pipe-delimited files
